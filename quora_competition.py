@@ -1,4 +1,4 @@
-# https://www.kaggle.com/christofhenkel/how-to-preprocessing-when-using-embeddings
+# http://www.deborahmesquita.com/2017-11-05/how-pytorch-gives-the-big-picture-with-deep-learning
 # standard imports
 import random
 import os
@@ -6,7 +6,9 @@ import numpy as np
 import pandas as pd
 
 # text preprocessing
-
+# http://mccormickml.com/2016/04/12/googles-pretrained-word2vec-model-in-python/
+# https://www.kaggle.com/christofhenkel/how-to-preprocessing-when-using-embeddings/comments
+# https://www.kaggle.com/sudalairajkumar/a-look-at-different-embeddings
 
 # pytorch imports
 import torch
@@ -15,6 +17,7 @@ import torch.utils.data
 
 
 # cross validation and metrics
+# TODO: Test stratified vs normal k folds
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import f1_score
 
