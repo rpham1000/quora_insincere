@@ -123,7 +123,7 @@ class TrollHunter(object):
         # Get the target values
         y_train = self.train_df['target'].values
 
-        return x_train, y_train, x_test
+        return x_train, y_train, x_test, tokenizer
 
     def vectorize_sentences(self):
         pass
@@ -133,6 +133,71 @@ class TrollHunter(object):
 
     def test_model(self):
         pass
+
+
+class Embedding(object):
+    def __init__(self,
+                 embedding_filename):
+        """[summary]
+
+        [description]
+
+        Args:
+            embedding_filename: [description]
+        """
+        self.embedding_filename = embedding_filename
+
+
+class Glove(Embedding):
+    def __init__(self,
+                 embedding_filename,
+                 word_index,
+                 max_features):
+        """[summary]
+
+        What is going on here?!?!
+
+        Args:
+            embedding_filename: [description]
+        """
+        super().__init__(embedding_filename=embedding_filename)
+
+        # TODO: What is this little asterick?
+        def get_coefs(word, *arr):
+            return word, np.asarray(arr, dtype='float32')[:300]
+        embeddings_index = dict(
+            get_coefs(*o.split(" ")) for o in open(embedding_filename))
+
+        all_embs = np.stack(embeddings_index.values())
+        emb_mean = -0.005838499
+        emb_std = 0.48782197
+        embed_size = all_embs.shape[1]
+
+        nb_words = min(max_features, len(word_index))
+        embedding_matrix = np.random.normal(
+            emb_mean,
+            emb_std,
+            (nb_words, embed_size))
+        for word, i in word_index.items():
+            if i >= max_features:
+                continue
+            embedding_vector = embeddings_index.get(word)
+            if embedding_vector is not None:
+                embedding_matrix[i] = embedding_vector
+
+        self.matrix = self.embedding_matrix
+
+
+class FastText(Embedding):
+    def __init__(self, arg):
+        super(ClassName, self).__init__()
+        self.arg = arg
+
+
+class Para(Embedding):
+    def __init__(self, arg):
+        super(ClassName, self).__init__()
+        self.arg = arg
 
 
 def main():
@@ -166,7 +231,7 @@ def main():
     # how many unique words to use (i.e num rows in embedding vector)
     max_features = 95000
     max_len = 70  # max number of words in a question to use
-    x_train, y_train, x_test = han.vectorize_words(
+    x_train, y_train, x_test, tokenizer = han.vectorize_words(
         embed_size=embed_size,
         max_features=max_features,
         max_len=max_len)
