@@ -28,11 +28,11 @@ tqdm.pandas()
 
 class TrollHunter(object):
     def __init__(self,
-                 train_x,
-                 train_y,
-                 test_x,
+                 train_filename,
+                 test_filename,
                  embedding_filename,
-                 seed):
+                 output_filename,
+                 seed=1234):
         """Insincere question detector for Quora
 
         Pytorch binary text classifier with
@@ -40,8 +40,13 @@ class TrollHunter(object):
         Args:
             arg: [description]
         """
-        self.training_data_x = train_x
-        self.training_data_y = train_y
+        self.train_df = pd.read_csv(train_filename)
+        self.test_df = pd.read_csv(test_filename)
+        print('Train data dimension: ', self.train_df.shape)
+        print(self.train_df.head())
+        print('Test data dimension: ', self.test_df.shape)
+        print(self.test_df.head())
+
         self.seed = seed
 
         self.set_random_seed()
@@ -59,7 +64,11 @@ class TrollHunter(object):
         torch.backends.cudnn.deterministic = True
 
     def vectorize_words(self):
-        pass
+        """[summary]
+
+        [description]
+        """
+
 
     def vectorize_sentences(self):
         pass
@@ -72,9 +81,32 @@ class TrollHunter(object):
 
 
 def main():
-    input_filename = ''
-    embedding_filename = ''
-    output_filename = ''
+    """[summary]
+
+    [description]
+    """
+    # Input filenames
+    train_filename = os.path.join(
+        'input',
+        'train.csv')
+    test_filename = os.path.join(
+        'input',
+        'test.csv')
+    embedding_filename = os.path.join(
+        'embeddings',
+        'glove.840B.300d',
+        'glove.840B.300d.txt')
+    output_filename = os.path.join(
+        'output',
+        'submission.csv')
+
+    han = TrollHunter(
+        train_filename=train_filename,
+        test_filename=test_filename,
+        embedding_filename=embedding_filename,
+        output_filename=output_filename)
+
+    han.vectorize_words()
 
 
 if __name__ == '__main__':
