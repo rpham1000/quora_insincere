@@ -9,6 +9,9 @@ import pandas as pd
 # http://mccormickml.com/2016/04/12/googles-pretrained-word2vec-model-in-python/
 # https://www.kaggle.com/christofhenkel/how-to-preprocessing-when-using-embeddings/comments
 # https://www.kaggle.com/sudalairajkumar/a-look-at-different-embeddings
+# imports for preprocessing the questions
+from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.sequence import pad_sequences
 
 # pytorch imports
 import torch
@@ -48,7 +51,6 @@ class TrollHunter(object):
         print(self.test_df.head())
 
         self.seed = seed
-
         self.set_random_seed()
 
     def set_random_seed(self):
@@ -63,12 +65,65 @@ class TrollHunter(object):
         torch.cuda.manual_seed(self.seed)
         torch.backends.cudnn.deterministic = True
 
-    def vectorize_words(self):
+    def vectorize_words(self,
+                        embed_size,
+                        max_features,
+                        max_len):
         """[summary]
 
-        [description]
+        https://www.kaggle.com/gmhost/gru-capsule
         """
 
+        puncts = [
+            ',', '.', '"', ':', ')', '(', '-', '!', '?', '|', ';', "'", '$',
+            '&', '/', '[', ']', '>', '%', '=', '#', '*', '+', '\\', '•', '~',
+            '@', '£', '·', '_', '{', '}', '©', '^', '®', '`', '<', '→', '°',
+            '€', '™', '›', '♥', '←', '×', '§', '″', '′', 'Â', '█', '½', 'à',
+            '…', '“', '★', '”', '–', '●', 'â', '►', '−', '¢', '²', '¬', '░',
+            '¶', '↑', '±', '¿', '▾', '═', '¦', '║', '―', '¥', '▓', '—', '‹',
+            '─', '▒', '：', '¼', '⊕', '▼', '▪', '†', '■', '’', '▀', '¨', '▄',
+            '♫', '☆', 'é', '¯', '♦', '¤', '▲', 'è', '¸', '¾', 'Ã', '⋅', '‘',
+            '∞', '∙', '）', '↓', '、', '│', '（', '»', '，', '♪', '╩', '╚', '³',
+            '・', '╦', '╣', '╔', '╗', '▬', '❤', 'ï', 'Ø', '¹', '≤', '‡', '√', ]
+
+        def clean_text(x):
+            x = str(x)
+            for punct in puncts:
+                # TODO: What is this little script 'f'?
+                x = x.replace(punct, f' {punct} ')
+            return x
+
+        # Lowercase all
+        self.train_df["question_text"] = self.train_df[
+            "question_text"].str.lower()
+        self.test_df["question_text"] = self.test_df[
+            "question_text"].str.lower()
+
+        # Remove punctuation in punctuation list
+        self.train_df["question_text"] = self.train_df[
+            "question_text"].apply(lambda x: clean_text(x))
+        self.test_df["question_text"] = self.test_df[
+            "question_text"].apply(lambda x: clean_text(x))
+
+        # Fill up the missing values
+        # TODO: Why are there na values?
+        x_train = self.train_df["question_text"].fillna("_##_").values
+        x_test = self.test_df["question_text"].fillna("_##_").values
+
+        # Tokenize the sentences
+        tokenizer = Tokenizer(num_words=max_features)
+        tokenizer.fit_on_texts(list(x_train))
+        x_train = tokenizer.texts_to_sequences(x_train)
+        x_test = tokenizer.texts_to_sequences(x_test)
+
+        # Pad the sentences
+        x_train = pad_sequences(x_train, maxlen=max_len)
+        x_test = pad_sequences(x_test, maxlen=max_len)
+
+        # Get the target values
+        y_train = self.train_df['target'].values
+
+        return x_train, y_train, x_test
 
     def vectorize_sentences(self):
         pass
@@ -106,7 +161,15 @@ def main():
         embedding_filename=embedding_filename,
         output_filename=output_filename)
 
-    han.vectorize_words()
+    # Text preprocessing
+    embed_size = 300  # how big is each word vector
+    # how many unique words to use (i.e num rows in embedding vector)
+    max_features = 95000
+    max_len = 70  # max number of words in a question to use
+    x_train, y_train, x_test = han.vectorize_words(
+        embed_size=embed_size,
+        max_features=max_features,
+        max_len=max_len)
 
 
 if __name__ == '__main__':
