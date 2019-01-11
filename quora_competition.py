@@ -79,3 +79,9 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+# TODO: Ideas to test
+# 1) Genetic algorithm sentence generator, selecting for insincere with NN
+# 2) Vecotorizing sentence in manner that preservers word order
+#       * Switching to CNN
