@@ -236,6 +236,8 @@ def main():
         max_features=max_features,
         max_len=max_len)
 
+    hand_in = Glove(embedding_filename)
+
 
 if __name__ == '__main__':
     main()
