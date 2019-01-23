@@ -131,6 +131,9 @@ class TrollHunter(object):
     def train_model(self):
         pass
 
+    def predict(self):
+        pass
+
     def test_model(self):
         pass
 
