@@ -157,7 +157,7 @@ class TrollHunter(object):
             train_preds: [description]
         """
 
-        search_result = threshold_search(y_train, train_preds)
+        search_result = self.threshold_search(y_train, train_preds)
 
         search_result
 
@@ -166,9 +166,30 @@ class TrollHunter(object):
 
         return submission
 
+    def threshold_search(y_true,
+                         y_proba):
+        """Performs threshold search to find best f1 score
 
-    def test_model(self):
-        pass
+        Args:
+            y_true: training target value
+            y_proba: predicted target value on training data
+
+        Returns:
+            search_result (`obj`:`dict`): dictionary with best threshold
+                and corresponding f1 score
+        """
+        best_threshold = 0
+        best_score = 0
+        for threshold in tqdm([i * 0.01 for i in range(100)]):
+            score = f1_score(y_true=y_true, y_pred=y_proba > threshold)
+            if score > best_score:
+                best_threshold = threshold
+                best_score = score
+        search_result = {'threshold': best_threshold, 'f1': best_score}
+        return search_result
+
+        def test_model(self):
+            pass
 
 
 class Embedding(object):
@@ -274,6 +295,7 @@ def main():
 
     hand_in = Glove(embedding_filename)
 
+    submission.to_csv('submission.csv', index=False)
 
 if __name__ == '__main__':
     main()
