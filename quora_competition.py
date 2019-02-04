@@ -125,8 +125,21 @@ class TrollHunter(object):
 
         return x_train, y_train, x_test, tokenizer
 
-    def vectorize_sentences(self):
-        pass
+    def encode_sentences(self,
+                         word_embedding_list,
+                         type='BOREP'):
+        """Use random encoding to convert word embeddings to sentences
+
+        Implements BOREP, LSTMs, and ESN from "No Training Required:
+        Exploring Random Encoders for Sentence Classification."
+
+        Args:
+            word_embedding_list (`obj`: `list`): List of words
+                encoded by pretrained embedding
+            type (str): 'BOREP', 'LSTM', or 'ESN'
+        """
+
+        # TODO: implement embeddings
 
     def train_model(self):
         pass
