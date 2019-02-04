@@ -178,7 +178,7 @@ class Glove(Embedding):
         """
         super().__init__(embedding_filename=embedding_filename)
 
-        # TODO: What is this little asterick?
+        # Asterick allows function to be called for varible length o?
         def get_coefs(word, *arr):
             return word, np.asarray(arr, dtype='float32')[:300]
         embeddings_index = dict(
@@ -257,9 +257,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-# TODO: Ideas to test
-# 1) Genetic algorithm sentence generator, selecting for insincere with NN
-# 2) Vecotorizing sentence in manner that preservers word order
-#       * Switching to CNN
