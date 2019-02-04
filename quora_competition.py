@@ -144,8 +144,28 @@ class TrollHunter(object):
     def train_model(self):
         pass
 
-    def predict(self):
-        pass
+    def predict(self,
+                y_train,
+                train_preds,
+                test_preds):
+        """[summary]
+
+        [description]
+
+        Args:
+            y_train: [description]
+            train_preds: [description]
+        """
+
+        search_result = threshold_search(y_train, train_preds)
+
+        search_result
+
+        submission = self.test_df[['qid']].copy()
+        submission['prediction'] = test_preds > search_result['threshold']
+
+        return submission
+
 
     def test_model(self):
         pass
